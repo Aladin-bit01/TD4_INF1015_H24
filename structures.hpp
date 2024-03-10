@@ -13,6 +13,7 @@ using namespace std;
 
 struct Film; struct Acteur; // Permet d'utiliser les types alors qu'ils seront défini après.
 
+
 class ListeFilms {
 public:
 	ListeFilms() = default;
@@ -59,12 +60,22 @@ public:
 	Liste(Liste<T>&&) = default;  // Pas nécessaire, mais puisque c'est si simple avec unique_ptr...
 	Liste<T>& operator= (Liste<T>&&) noexcept = default;  // Utilisé pour l'initialisation dans lireFilm.
 
+
+	/*Liste<T>& operator= (const Liste<T>& autre) noexcept
+	{
+		delete[] elements_;
+		elements_ = make_unique<shared_ptr<T>[]>(nElements_);
+		for (int i = 0; i < nElements_; ++i)
+			{elements_[i] = autre.elements_[i];}
+		autre.elements_ = nullptr;
+		return *this;
+	}*/
+
 	void ajouter(shared_ptr<T> element)
 	{
 		assert(nElements_ < capacite_);  // Comme dans le TD précédent, on ne demande pas la réallocation pour ListeActeurs...
 		elements_[nElements_++] = move(element);
 	}
-
 	// Noter que ces accesseurs const permettent de modifier les éléments; on pourrait vouloir des versions const qui retournent des const shared_ptr, et des versions non const qui retournent des shared_ptr.  En C++23 on pourrait utiliser "deducing this".
 	shared_ptr<T>& operator[] (int index) const { assert(0 <= index && index < nElements_); return elements_[index]; }
 	span<shared_ptr<T>> enSpan() const { return span(elements_.get(), nElements_); }
@@ -76,14 +87,62 @@ private:
 
 using ListeActeurs = Liste<Acteur>;
 
-struct Film
+//Nouvelle Classe Item
+class Item
 {
-	string titre, realisateur; // Titre et nom du réalisateur (on suppose qu'il n'y a qu'un réalisateur).
-	int anneeSortie = 0, recette = 0; // Année de sortie et recette globale du film en millions de dollars
-	ListeActeurs acteurs;
+public:
+	friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
+	friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
+	string accesTitre() { return titre; }
+	int accesAnneeSortie() { return anneeSortie; }
+	//private:
+	string titre;
+	int anneeSortie;
+};
+
+
+//Struct Film transforme en classe qui herite de ITEM
+class Film: public Item
+{
+	public:
+
+		friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
+		friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
+		const string& accesRealisateur()const { return realisateur_; }
+		int accesRecette() const { return recette_; }
+		ListeActeurs accesActeurs() const { return acteurs_;  }
+		void setRealisateur(string realisateur) { realisateur_ = realisateur; }
+		void setRecette(int recette) { recette_ = recette;}
+		void setActeurs(ListeActeurs acteurs) 
+		{ acteurs_= acteurs;}
+	
+	private:
+		string realisateur_ = " ";
+		int recette_ = 0; 
+		ListeActeurs acteurs_;
+};
+
+//Nouvelle Classe Livre qui herite de Item
+class Livre : public Item
+{
+	public:
+		Livre(string auteur, int copiesVendus,int nombreDePages): 
+		auteur_(auteur), copiesVendus_(copiesVendus), nombreDePages_(nombreDePages){}
+
+		const string& accesAuteur() const { return auteur_; }
+		int accesCopiesVendus() const { return copiesVendus_; }
+		int accesNbPages() const { return nombreDePages_; }
+	private:
+		string auteur_= " ";
+		int copiesVendus_ = 0;
+		int nombreDePages_ = 0;
 };
 
 struct Acteur
 {
 	string nom; int anneeNaissance = 0; char sexe = '\0';
 };
+
+
+
+
