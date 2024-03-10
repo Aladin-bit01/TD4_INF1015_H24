@@ -61,15 +61,16 @@ public:
 	Liste<T>& operator= (Liste<T>&&) noexcept = default;  // Utilisé pour l'initialisation dans lireFilm.
 
 
-	/*Liste<T>& operator= (const Liste<T>& autre) noexcept
-	{
-		delete[] elements_;
-		elements_ = make_unique<shared_ptr<T>[]>(nElements_);
-		for (int i = 0; i < nElements_; ++i)
-			{elements_[i] = autre.elements_[i];}
-		autre.elements_ = nullptr;
+	Liste<T>& operator= (const Liste<T>& autre) {
+		if (this == &autre) return *this;
+		capacite_ = autre.capacite_;
+		nElements_ = autre.nElements_;
+		elements_ = make_unique<shared_ptr<T>[]>(capacite_);
+		for (int i = 0; i < nElements_; ++i) {
+			elements_[i] = autre.elements_[i];
+		}
 		return *this;
-	}*/
+	}
 
 	void ajouter(shared_ptr<T> element)
 	{
@@ -93,11 +94,13 @@ class Item
 public:
 	friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
 	friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
-	string accesTitre() { return titre; }
-	int accesAnneeSortie() { return anneeSortie; }
-	//private:
-	string titre;
-	int anneeSortie;
+	const string accesTitre() const { return titre_; }
+	int accesAnneeSortie() const { return anneeSortie_; }
+	void setTitre(string titre) { titre_ = titre; }
+	void setAnneeSortie(int anneeSortie) { anneeSortie_ = anneeSortie; }
+	private:
+	string titre_;
+	int anneeSortie_;
 };
 
 
@@ -113,9 +116,8 @@ class Film: public Item
 		ListeActeurs accesActeurs() const { return acteurs_;  }
 		void setRealisateur(string realisateur) { realisateur_ = realisateur; }
 		void setRecette(int recette) { recette_ = recette;}
-		void setActeurs(ListeActeurs acteurs) 
-		{ acteurs_= acteurs;}
-	
+		void setActeurs(ListeActeurs acteurs) { acteurs_ = acteurs;}
+		
 	private:
 		string realisateur_ = " ";
 		int recette_ = 0; 
@@ -132,6 +134,9 @@ class Livre : public Item
 		const string& accesAuteur() const { return auteur_; }
 		int accesCopiesVendus() const { return copiesVendus_; }
 		int accesNbPages() const { return nombreDePages_; }
+		void setAuteur(string auteur) { auteur_ = auteur; }
+		void setcopiesVendus(int copiesVendus) { copiesVendus_ = copiesVendus; }
+		void setnombreDePages(int nombreDePages) { nombreDePages_ = nombreDePages; }
 	private:
 		string auteur_= " ";
 		int copiesVendus_ = 0;

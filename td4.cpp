@@ -110,7 +110,7 @@ void ListeFilms::enleverFilm(const Film* film)
 shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const
 {
 	for (const Film* film : enSpan()) {
-		for (const shared_ptr<Acteur>& acteur : film->accesActeurs().enSpan()) {
+		for (const shared_ptr<Acteur>& acteur : film->acteurs_.enSpan()) {
 			if (acteur->nom == nomActeur)
 				return acteur;
 		}
@@ -140,13 +140,13 @@ shared_ptr<Acteur> lireActeur(istream& fichier, const ListeFilms& listeFilms)
 Film* lireFilm(istream& fichier, ListeFilms& listeFilms)
 {
 	Film* film = new Film;
-	film->titre = lireString(fichier);
+	film->setTitre(lireString(fichier));
 	film->setRealisateur(lireString(fichier));
-	film->anneeSortie = int(lireUintTailleVariable(fichier));
+	film->setAnneeSortie(lireUintTailleVariable(fichier));
 	film->setRecette(lireUintTailleVariable(fichier));
 	auto nActeurs = int(lireUintTailleVariable(fichier));
 	film->setActeurs(ListeActeurs(nActeurs));  // On n'a pas fait de méthode pour changer la taille d'allocation, seulement un constructeur qui prend la capacité.  Pour que cette affectation fonctionne, il faut s'assurer qu'on a un operator= de move pour ListeActeurs.
-	cout << "Création Film " << film->titre << endl;
+	cout << "Création Film " << film->accesTitre() << endl;
 
 	for ([[maybe_unused]] auto i : range(nActeurs)) {  // On peut aussi mettre nElements avant et faire un span, comme on le faisait au TD précédent.
 		film->accesActeurs().ajouter(lireActeur(fichier, listeFilms));
@@ -192,8 +192,8 @@ ostream& operator<< (ostream& os, const Acteur& acteur)
 //[
 ostream& operator<< (ostream& os, const Film& film)
 {
-	os << "Titre: " << film.titre << endl;
-	os << "  Réalisateur: " << film.accesRealisateur() << "  Année :" << film.anneeSortie << endl;
+	os << "Titre: " << film.accesTitre() << endl;
+	os << "  Réalisateur: " << film.accesRealisateur() << "  Année :" << film.accesAnneeSortie() << endl;
 	os << "  Recette: " << film.accesRecette() << "M$" << endl;
 
 	os << "Acteurs:" << endl;
@@ -253,7 +253,7 @@ int main()
 	// Tests chapitres 7-8:
 	// Les opérations suivantes fonctionnent.
 	Film skylien = *listeFilms[0];
-	skylien.titre = "Skylien";
+	skylien.setTitre("Skylien");
 	skylien.accesActeurs()[0] = listeFilms[1]->accesActeurs()[0];
 	skylien.accesActeurs()[0]->nom = "Daniel Wroughton Craig";
 	cout << ligneDeSeparation
@@ -265,14 +265,14 @@ int main()
 	// Tests chapitre 10:
 	auto film955 = listeFilms.trouver([](const auto& f) { return f.accesRecette() == 955; });
 	cout << "\nFilm de 955M$:\n" << *film955;
-	assert(film955->titre == "Le Hobbit : La Bataille des Cinq Armées");
+	assert(film955->accesTitre() == "Le Hobbit : La Bataille des Cinq Armées");
 	assert(listeFilms.trouver([](const auto&) { return false; }) == nullptr); // Pour la couveture de code: chercher avec un critère toujours faux ne devrait pas trouver.
 	// Exemple de condition plus compliquée: (pas demandé)
 	auto estVoyelle = [](char c) { static const string voyelles = "AEUOUYaeiouy"; return voyelles.find(c) != voyelles.npos; };
 	auto commenceParVoyelle = [&](const string& x) { return !x.empty() && estVoyelle(x[0]); };
-	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.titre); }) == listeFilms[0]);
+	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.accesTitre()); }) == listeFilms[0]);
 	assert(listeFilms.trouver([&](const auto& f) { return f.accesActeurs()[0]->nom[0] != 'T'; }) == listeFilms[1]);
-	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.titre) && f.accesActeurs()[0]->nom[0] != 'T'; }) == listeFilms[2]);
+	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.accesTitre()) && f.accesActeurs()[0]->nom[0] != 'T'; }) == listeFilms[2]);
 
 	// Tests chapitre 9:
 	Liste<string> listeTextes(2);
