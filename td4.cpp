@@ -8,7 +8,7 @@
 
 #include "bibliotheque_cours.hpp"
 #include "verification_allocation.hpp" // Nos fonctions pour le rapport de fuites de mémoire.
-
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -26,6 +26,8 @@ using namespace gsl;
 
 typedef uint8_t UInt8;
 typedef uint16_t UInt16;
+
+Livre lireLivre(const string& fichier);
 
 #pragma region "Fonctions de base pour lire le fichier binaire"//{
 template <typename T>
@@ -149,7 +151,7 @@ Film* lireFilm(istream& fichier, ListeFilms& listeFilms)
 	cout << "Création Film " << film->accesTitre() << endl;
 
 	for ([[maybe_unused]] auto i : range(nActeurs)) {  // On peut aussi mettre nElements avant et faire un span, comme on le faisait au TD précédent.
-		film->accesActeurs().ajouter(lireActeur(fichier, listeFilms));
+		film->acteurs_.ajouter(lireActeur(fichier, listeFilms));
 	}
 
 	return film;
@@ -197,7 +199,7 @@ ostream& operator<< (ostream& os, const Film& film)
 	os << "  Recette: " << film.accesRecette() << "M$" << endl;
 
 	os << "Acteurs:" << endl;
-	for (const shared_ptr<Acteur>& acteur : film.accesActeurs().enSpan())
+	for (const shared_ptr<Acteur>& acteur : film.acteurs_.enSpan())
 		os << *acteur;
 	return os;
 }
@@ -254,13 +256,13 @@ int main()
 	// Les opérations suivantes fonctionnent.
 	Film skylien = *listeFilms[0];
 	skylien.setTitre("Skylien");
-	skylien.accesActeurs()[0] = listeFilms[1]->accesActeurs()[0];
-	skylien.accesActeurs()[0]->nom = "Daniel Wroughton Craig";
+	skylien.acteurs_[0] = listeFilms[1]->acteurs_[0];
+	skylien.acteurs_[0]->nom = "Daniel Wroughton Craig";
 	cout << ligneDeSeparation
 		<< "Les films copiés/modifiés, sont:\n"
 		<< skylien << *listeFilms[0] << *listeFilms[1] << ligneDeSeparation;
-	assert(skylien.accesActeurs()[0]->nom == listeFilms[1]->accesActeurs()[0]->nom);
-	assert(skylien.accesActeurs()[0]->nom != listeFilms[0]->accesActeurs()[0]->nom);
+	assert(skylien.acteurs_[0]->nom == listeFilms[1]->acteurs_[0]->nom);
+	assert(skylien.acteurs_[0]->nom != listeFilms[0]->acteurs_[0]->nom);
 
 	// Tests chapitre 10:
 	auto film955 = listeFilms.trouver([](const auto& f) { return f.accesRecette() == 955; });
@@ -271,8 +273,8 @@ int main()
 	auto estVoyelle = [](char c) { static const string voyelles = "AEUOUYaeiouy"; return voyelles.find(c) != voyelles.npos; };
 	auto commenceParVoyelle = [&](const string& x) { return !x.empty() && estVoyelle(x[0]); };
 	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.accesTitre()); }) == listeFilms[0]);
-	assert(listeFilms.trouver([&](const auto& f) { return f.accesActeurs()[0]->nom[0] != 'T'; }) == listeFilms[1]);
-	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.accesTitre()) && f.accesActeurs()[0]->nom[0] != 'T'; }) == listeFilms[2]);
+	assert(listeFilms.trouver([&](const auto& f) { return f.acteurs_[0]->nom[0] != 'T'; }) == listeFilms[1]);
+	assert(listeFilms.trouver([&](const auto& f) { return commenceParVoyelle(f.accesTitre()) && f.acteurs_[0]->nom[0] != 'T'; }) == listeFilms[2]);
 
 	// Tests chapitre 9:
 	Liste<string> listeTextes(2);
@@ -314,5 +316,19 @@ int main()
 		}
 		entree.close(); // Fermer le fichier après la lecture
 	}
-	
 }
+
+Livre lireLivre(const string& fichier) {
+	string titre, auteur;
+	int annee, copiesVendus, nombreDePages;
+	ifstream entree(fichier);
+	entree >> quoted(titre);
+	entree >> annee;
+	entree >> quoted(auteur);
+	entree >> copiesVendus;
+	entree >> nombreDePages;
+	Livre livre(titre, auteur, annee, copiesVendus, nombreDePages);
+	return livre;
+}
+
+

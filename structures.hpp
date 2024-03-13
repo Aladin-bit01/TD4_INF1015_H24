@@ -92,6 +92,8 @@ using ListeActeurs = Liste<Acteur>;
 class Item
 {
 public:
+	Item(){}
+	Item (string titre, int anneeSortie):titre_(titre), anneeSortie_(anneeSortie){}
 	friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
 	friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
 	const string accesTitre() const { return titre_; }
@@ -99,8 +101,8 @@ public:
 	void setTitre(string titre) { titre_ = titre; }
 	void setAnneeSortie(int anneeSortie) { anneeSortie_ = anneeSortie; }
 	private:
-	string titre_;
-	int anneeSortie_;
+		string titre_;
+		int anneeSortie_;
 };
 
 
@@ -108,27 +110,31 @@ public:
 class Film: public Item
 {
 	public:
-
+		Film(){}
+		Film(string titre, int anneeSortie, string realisateur,int recette, ListeActeurs acteurs): 
+			Item(titre, anneeSortie), realisateur_(realisateur), recette_(recette), acteurs_(acteurs){}
 		friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
 		friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
 		const string& accesRealisateur()const { return realisateur_; }
 		int accesRecette() const { return recette_; }
-		ListeActeurs accesActeurs() const { return acteurs_;  }
+		//ListeActeurs accesActeurs()  { return acteurs_;  }
 		void setRealisateur(string realisateur) { realisateur_ = realisateur; }
 		void setRecette(int recette) { recette_ = recette;}
 		void setActeurs(ListeActeurs acteurs) { acteurs_ = acteurs;}
-		
+		ListeActeurs acteurs_;
 	private:
+		//ListeActeurs acteurs_;
 		string realisateur_ = " ";
 		int recette_ = 0; 
-		ListeActeurs acteurs_;
+		
 };
 
 //Nouvelle Classe Livre qui herite de Item
 class Livre : public Item
 {
 	public:
-		Livre(string auteur, int copiesVendus,int nombreDePages): 
+		Livre();
+		Livre(string titre,string auteur, int annee, int copiesVendus,int nombreDePages): Item(titre, annee),
 		auteur_(auteur), copiesVendus_(copiesVendus), nombreDePages_(nombreDePages){}
 
 		const string& accesAuteur() const { return auteur_; }
