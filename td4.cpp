@@ -28,7 +28,6 @@ using namespace gsl;
 typedef uint8_t UInt8;
 typedef uint16_t UInt16;
 
-Livre lireLivre(const string& fichier);
 
 #pragma region "Fonctions de base pour lire le fichier binaire"//{
 template <typename T>
@@ -218,6 +217,41 @@ ostream& operator<< (ostream& os, const ListeFilms& listeFilms)
 	return os;
 }
 
+
+//Fonction pour lire le fichier livre.txt et remplir vector 
+void remplirBiblithequeAvecLivres(const string& fichier, vector<Item>& biblio) {
+	string titre, auteur;
+	int annee, copiesVendus, nombreDePages;
+	ifstream entree(fichier);
+	while (entree >> quoted(titre) >> annee >> quoted(auteur) >> copiesVendus >> nombreDePages) {
+		Livre monLivre =  Livre(titre, auteur, annee, copiesVendus, nombreDePages);
+		biblio.push_back(monLivre);
+	}
+
+	entree.close();
+}
+void remplirBiblioAvecFilms(ListeFilms listeFilms,vector<Item>& biblio){
+	for (auto& film : listeFilms.enSpan()) {
+		biblio.push_back(*film);
+	}
+}
+
+
+
+//J'ai essayé de travailler avec de ptrs mais ca a fait des leaks pour le moment so j'ai laissé tomber
+void detruire_bibliotheque(vector<Item*>& biblio)
+{
+	for (Item* item : biblio) {
+		delete item;
+	}
+	biblio.clear();
+
+}
+
+
+
+
+
 int main()
 {
 #ifdef VERIFICATION_ALLOCATION_INCLUS
@@ -305,31 +339,21 @@ int main()
 		assert(listeFilms.size() == ancienneTailleListe);
 	}
 
+
+
+	vector<Item> bibliotheque;
+	//Test affichage Bibliotheque Livre et Films
+	remplirBiblithequeAvecLivres("livres.txt", bibliotheque);
+	remplirBiblioAvecFilms(listeFilms, bibliotheque);
+	cout << "Bibliotheque: " << endl;
+	for (int i = 0; i < bibliotheque.size(); i++) {
+		cout << "Titre: " << bibliotheque[i].accesTitre() << ", Date: " << bibliotheque[i].accesAnneeSortie() << endl;
+	}
+
+	//detruire_bibliotheque(bibliotheque);
+
 	// Détruire tout avant de terminer le programme.
 	listeFilms.detruire(true);
-
-	//Test Fichier livres.txt
-	string line;
-	ifstream entree ("livres.txt");
-	if (entree.is_open()) {
-		while (getline(entree, line)) { // Lire le fichier ligne par ligne
-			std::cout << line << std::endl; // Afficher chaque ligne
-		}
-		entree.close(); // Fermer le fichier après la lecture
-	}
-}
-
-Livre lireLivre(const string& fichier) {
-	string titre, auteur;
-	int annee, copiesVendus, nombreDePages;
-	ifstream entree(fichier);
-	entree >> quoted(titre);
-	entree >> annee;
-	entree >> quoted(auteur);
-	entree >> copiesVendus;
-	entree >> nombreDePages;
-	Livre livre(titre, auteur, annee, copiesVendus, nombreDePages);
-	return livre;
 }
 
 

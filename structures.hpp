@@ -117,7 +117,7 @@ class Film: public Item
 		friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
 		const string& accesRealisateur()const { return realisateur_; }
 		int accesRecette() const { return recette_; }
-		//ListeActeurs accesActeurs()  { return acteurs_;  }
+		//ListeActeurs& accesActeurs()  { return acteurs_;  }
 		void setRealisateur(string realisateur) { realisateur_ = realisateur; }
 		void setRecette(int recette) { recette_ = recette;}
 		void setActeurs(ListeActeurs acteurs) { acteurs_ = acteurs;}
