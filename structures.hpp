@@ -8,6 +8,7 @@
 #include <functional>
 #include <cassert>
 #include "gsl/span"
+#include <iostream>
 using gsl::span;
 using namespace std;
 
@@ -132,6 +133,10 @@ class Film: public Item
 		void setRecette(int recette) { recette_ = recette;}
 		void setActeurs(ListeActeurs acteurs) { acteurs_ = acteurs;}
 		ListeActeurs acteurs_;
+		void afficher(ostream& os) const override {
+			Item::afficher(os);
+			os << "Réalisateur: " << realisateur_ << ", Recette: " << recette_ << "M$" << std::endl;
+		}
 	private:
 		//ListeActeurs acteurs_;
 		string realisateur_ = " ";
@@ -153,6 +158,10 @@ class Livre : public Item
 		void setAuteur(string auteur) { auteur_ = auteur; }
 		void setcopiesVendus(int copiesVendus) { copiesVendus_ = copiesVendus; }
 		void setnombreDePages(int nombreDePages) { nombreDePages_ = nombreDePages; }
+		void afficher(ostream& os) const override {
+			Item::afficher(os);
+			os << "Auteur: " << auteur_ << ", Copies vendues: " << copiesVendus_ << " millions, Pages: " << nombreDePages_ << std::endl;
+		}
 	private:
 		string auteur_= " ";
 		int copiesVendus_ = 0;
