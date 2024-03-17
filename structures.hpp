@@ -171,19 +171,6 @@ class Livre : virtual public Item
 };
 
 //Partie 4, nouvelle classe FilmLivre
-//class FilmLivre : public Film, public Livre {
-//public:
-//	FilmLivre(const Film& film, const Livre& livre)
-//		: Item(film.accesTitre(), film.accesAnneeSortie()
-//		  Film(film),
-//		  Livre(livre) {}
-//
-//	void afficher(ostream& os) const override {
-//		Film::afficher(os);
-//		Livre::afficher(os);
-//	}
-//};
-
 class FilmLivre : public Film, public Livre {
 public:
 	FilmLivre(const Film& film, const Livre& livre)

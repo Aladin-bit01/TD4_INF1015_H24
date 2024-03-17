@@ -1,6 +1,5 @@
 ﻿// Solutionnaire du TD3 INF1015 hiver 2024
 // Par Francois-R.Boyer@PolyMtl.ca
-// TEST PUSH HARRY
 
 #pragma region "Includes"//{
 #define _CRT_SECURE_NO_WARNINGS // On permet d'utiliser les fonctions de copies de chaînes qui sont considérées non sécuritaires.
@@ -338,7 +337,7 @@ int main()
 
 
 	vector<unique_ptr<Item>> bibliotheque;
-	//Test affichage Bibliotheque Livre et Films
+	//Affichage Bibliotheque Livre et Films
 	remplirBibliothequeAvecLivres("livres.txt", bibliotheque);
 	remplirBiblioAvecFilms(listeFilms, bibliotheque);
 
