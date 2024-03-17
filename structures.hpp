@@ -15,6 +15,13 @@ using namespace std;
 struct Film; struct Acteur; // Permet d'utiliser les types alors qu'ils seront défini après.
 
 
+struct Acteur
+{
+	string nom; int anneeNaissance = 0; char sexe = '\0';
+};
+
+
+
 class ListeFilms {
 public:
 	ListeFilms() = default;
@@ -129,15 +136,21 @@ class Film: virtual public Item
 		friend Film* lireFilm(istream& fichier, ListeFilms& listeFilms);
 		const string& accesRealisateur()const { return realisateur_; }
 		int accesRecette() const { return recette_; }
-		//ListeActeurs& accesActeurs()  { return acteurs_;  }
+		/*const ListeActeurs& accesActeurs()  { return acteurs_;  }*/
 		void setRealisateur(string realisateur) { realisateur_ = realisateur; }
 		void setRecette(int recette) { recette_ = recette;}
 		void setActeurs(ListeActeurs acteurs) { acteurs_ = acteurs;}
 		ListeActeurs acteurs_;
 		void afficher(ostream& os) const override {
+			os << "_____________________________________________________________________________________________________"
+				<< endl << endl;;
 			Item::afficher(os);
-			os << "Réalisateur: " << realisateur_ << ", Recette: " << recette_ << "M$" << std::endl;
-		// Affichage acteurs omis pour l'instant
+			os << "Realisateur: " << realisateur_ << ", Recette: " << recette_ << "M$" << std::endl;
+			os << "Acteurs: " << endl; 
+			for (shared_ptr<Acteur> acteur : acteurs_.enSpan()) {
+				os << "Nom: " << acteur.get()->nom << ", Annee de naissance: " << acteur.get()->anneeNaissance
+					<< ", Sexe: " << acteur.get()->sexe << endl;
+			}
 		}
 	private:
 		//ListeActeurs acteurs_;
@@ -173,15 +186,12 @@ class Livre : virtual public Item
 //Partie 4, nouvelle classe FilmLivre
 class FilmLivre : public Film, public Livre {
 public:
-	FilmLivre(const Film& film, const Livre& livre)
-		: Item(film.accesTitre(), film.accesAnneeSortie()),
+	FilmLivre(const Film& film, const Livre& livre):
+		Item(film.accesTitre(), film.accesAnneeSortie()),
 		Film(film),
 		Livre(livre) {}
 
 	void afficher(ostream& os) const override {
-		static const string ligneDeSeparation = 
-			"\033[32m────────────────────────────────────────\033[0m\n";
-		os << ligneDeSeparation;
 		Film::afficher(os);
 		// Affiche les informations supplémentaires de Livre, mais sans dupliquer le titre et l'année
 		os << "Auteur: " << Livre::accesAuteur()
@@ -191,10 +201,7 @@ public:
 };
 
 
-struct Acteur
-{
-	string nom; int anneeNaissance = 0; char sexe = '\0';
-};
+
 
 
 
