@@ -100,6 +100,7 @@ public :
 class Item : public Affichable
 {
 public:
+	virtual ~Item() override = default;
 	Item(){}
 	Item (string titre, int anneeSortie):titre_(titre), anneeSortie_(anneeSortie){}
 	friend shared_ptr<Acteur> ListeFilms::trouverActeur(const string& nomActeur) const;
@@ -109,7 +110,7 @@ public:
 	void setTitre(string titre) { titre_ = titre; }
 	void setAnneeSortie(int anneeSortie) { anneeSortie_ = anneeSortie; }
 	void afficher(ostream& os) const override {
-		os << "Titre: " << titre_ << "Année: " << anneeSortie_ << endl; 
+		os << "Titre: " << titre_ << ", Date: " << anneeSortie_ << endl; 
 	}
 	private:
 		string titre_;
@@ -136,6 +137,7 @@ class Film: public Item
 		void afficher(ostream& os) const override {
 			Item::afficher(os);
 			os << "Réalisateur: " << realisateur_ << ", Recette: " << recette_ << "M$" << std::endl;
+		// Affichage acteurs omis pour l'instant
 		}
 	private:
 		//ListeActeurs acteurs_;

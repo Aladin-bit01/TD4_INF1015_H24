@@ -218,36 +218,28 @@ ostream& operator<< (ostream& os, const ListeFilms& listeFilms)
 }
 
 
-//Fonction pour lire le fichier livre.txt et remplir vector 
-void remplirBiblithequeAvecLivres(const string& fichier, vector<Item>& biblio) {
+void remplirBibliothequeAvecLivres(const string& nomFichier, vector<unique_ptr<Item>>& bibliotheque) {
+	ifstream fichier(nomFichier);
 	string titre, auteur;
-	int annee, copiesVendus, nombreDePages;
-	ifstream entree(fichier);
-	while (entree >> quoted(titre) >> annee >> quoted(auteur) >> copiesVendus >> nombreDePages) {
-		Livre monLivre =  Livre(titre, auteur, annee, copiesVendus, nombreDePages);
-		biblio.push_back(monLivre);
-	}
-
-	entree.close();
-}
-void remplirBiblioAvecFilms(ListeFilms listeFilms,vector<Item>& biblio){
-	for (auto& film : listeFilms.enSpan()) {
-		biblio.push_back(*film);
+	int annee, copiesVendues, nombreDePages;
+	while (fichier >> quoted(titre) >> annee >> quoted(auteur) >> copiesVendues >> nombreDePages) {
+		bibliotheque.push_back(make_unique<Livre>(titre, auteur, annee, copiesVendues, nombreDePages));
 	}
 }
 
 
-
-//J'ai essayé de travailler avec de ptrs mais ca a fait des leaks pour le moment so j'ai laissé tomber
-void detruire_bibliotheque(vector<Item*>& biblio)
-{
-	for (Item* item : biblio) {
-		delete item;
+void remplirBiblioAvecFilms(const ListeFilms& listeFilms, vector<unique_ptr<Item>>& bibliotheque) {
+	for (const auto& film : listeFilms.enSpan()) {
+		bibliotheque.push_back(make_unique<Film>(*film));
 	}
-	biblio.clear();
-
 }
 
+
+void afficherBibliotheque(const vector<unique_ptr<Item>>& bibliotheque) {
+	for (const auto& item : bibliotheque) {
+		item->afficher(cout);
+	}
+}
 
 
 
@@ -341,16 +333,12 @@ int main()
 
 
 
-	vector<Item> bibliotheque;
+	vector<unique_ptr<Item>> bibliotheque;
 	//Test affichage Bibliotheque Livre et Films
-	remplirBiblithequeAvecLivres("livres.txt", bibliotheque);
+	remplirBibliothequeAvecLivres("livres.txt", bibliotheque);
 	remplirBiblioAvecFilms(listeFilms, bibliotheque);
 	cout << "Bibliotheque: " << endl;
-	for (int i = 0; i < bibliotheque.size(); i++) {
-		cout << "Titre: " << bibliotheque[i].accesTitre() << ", Date: " << bibliotheque[i].accesAnneeSortie() << endl;
-	}
-
-	//detruire_bibliotheque(bibliotheque);
+	afficherBibliotheque(bibliotheque);
 
 	// Détruire tout avant de terminer le programme.
 	listeFilms.detruire(true);
