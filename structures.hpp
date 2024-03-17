@@ -88,8 +88,15 @@ private:
 
 using ListeActeurs = Liste<Acteur>;
 
+//Nouvelle classe interface Affichable
+class Affichable {
+public : 
+	virtual void afficher(ostream& os) const = 0;
+	virtual ~Affichable() = default;
+};
+
 //Nouvelle Classe Item
-class Item
+class Item : public Affichable
 {
 public:
 	Item(){}
@@ -100,6 +107,9 @@ public:
 	int accesAnneeSortie() const { return anneeSortie_; }
 	void setTitre(string titre) { titre_ = titre; }
 	void setAnneeSortie(int anneeSortie) { anneeSortie_ = anneeSortie; }
+	void afficher(ostream& os) const override {
+		os << "Titre: " << titre_ << "Année: " << anneeSortie_ << endl; 
+	}
 	private:
 		string titre_;
 		int anneeSortie_;
