@@ -237,7 +237,12 @@ void remplirBiblioAvecFilms(const ListeFilms& listeFilms, vector<unique_ptr<Item
 
 void afficherBibliotheque(const vector<unique_ptr<Item>>& bibliotheque) {
 	for (const auto& item : bibliotheque) {
-		item->afficher(cout);
+		if (auto filmLivre = dynamic_cast<const FilmLivre*>(item.get())) {
+			filmLivre->afficher(cout);
+		}
+		else {
+			item->afficher(cout);
+		}
 	}
 }
 
@@ -332,11 +337,29 @@ int main()
 	}
 
 
-
 	vector<unique_ptr<Item>> bibliotheque;
 	//Test affichage Bibliotheque Livre et Films
 	remplirBibliothequeAvecLivres("livres.txt", bibliotheque);
 	remplirBiblioAvecFilms(listeFilms, bibliotheque);
+
+	// Trouvez le film "Le Hobbit" dans la bibliothèque.
+	Film* leHobbitFilm = nullptr;
+	Livre* leHobbitLivre = nullptr;
+	for (const auto& item : bibliotheque) {
+		if (auto film = dynamic_cast<Film*>(item.get()); film && film->accesTitre() == "Le Hobbit : La Bataille des Cinq Armées") {
+			leHobbitFilm = film;
+		}
+		if (auto livre = dynamic_cast<Livre*>(item.get()); livre && livre->accesTitre() == "The Hobbit") {
+			leHobbitLivre = livre;
+		}
+	}
+
+	if (leHobbitFilm && leHobbitLivre) {
+		auto filmLivre = make_unique<FilmLivre>(*leHobbitFilm, *leHobbitLivre);
+
+		bibliotheque.push_back(move(filmLivre));
+	}
+
 	cout << "Bibliotheque: " << endl;
 	afficherBibliotheque(bibliotheque);
 

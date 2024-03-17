@@ -119,7 +119,7 @@ public:
 
 
 //Struct Film transforme en classe qui herite de ITEM
-class Film: public Item
+class Film: virtual public Item
 {
 	public:
 		Film(){}
@@ -147,7 +147,7 @@ class Film: public Item
 };
 
 //Nouvelle Classe Livre qui herite de Item
-class Livre : public Item
+class Livre : virtual public Item
 {
 	public:
 		Livre();
@@ -169,6 +169,40 @@ class Livre : public Item
 		int copiesVendus_ = 0;
 		int nombreDePages_ = 0;
 };
+
+//Partie 4, nouvelle classe FilmLivre
+//class FilmLivre : public Film, public Livre {
+//public:
+//	FilmLivre(const Film& film, const Livre& livre)
+//		: Item(film.accesTitre(), film.accesAnneeSortie()
+//		  Film(film),
+//		  Livre(livre) {}
+//
+//	void afficher(ostream& os) const override {
+//		Film::afficher(os);
+//		Livre::afficher(os);
+//	}
+//};
+
+class FilmLivre : public Film, public Livre {
+public:
+	FilmLivre(const Film& film, const Livre& livre)
+		: Item(film.accesTitre(), film.accesAnneeSortie()),
+		Film(film),
+		Livre(livre) {}
+
+	void afficher(ostream& os) const override {
+		static const string ligneDeSeparation = 
+			"\033[32m────────────────────────────────────────\033[0m\n";
+		os << ligneDeSeparation;
+		Film::afficher(os);
+		// Affiche les informations supplémentaires de Livre, mais sans dupliquer le titre et l'année
+		os << "Auteur: " << Livre::accesAuteur()
+			<< ", Copies vendues: " << Livre::accesCopiesVendus()
+			<< " millions, Pages: " << Livre::accesNbPages() << endl;
+	}
+};
+
 
 struct Acteur
 {
