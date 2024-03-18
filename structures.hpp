@@ -1,5 +1,14 @@
-// Solutionnaire du TD3 INF1015 hiver 2024
-// Par Francois-R.Boyer@PolyMtl.ca
+//
+//Déclaration des classes pour la gestion d'une bibliothèque médiatique dans le cadre du TD4 d'INF1015.
+//Ce fichier contient les classes Item, Film, Livre, et FilmLivre, utilisées pour représenter les films et les livres,
+//ainsi que l'interface Affichable pour l'affichage des médias.
+// \file   structures.hpp
+// \author Alaa Edin Addas et Harry Heng
+// \date   17 mars 2024
+// Créé le 10 mars 2024
+//
+
+
 #pragma once
 // Structures mémoires pour une collection de films.
 

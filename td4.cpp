@@ -1,5 +1,15 @@
-﻿// Solutionnaire du TD3 INF1015 hiver 2024
-// Par Francois-R.Boyer@PolyMtl.ca
+﻿//﻿
+// Travail dirigé No. 4 pour le cours INF1015 - Programmation orientée objet avancée.
+// Ce TD continue sur les fondations du TD3 en introduisant les concepts d'héritage, polymorphisme,
+// et gestion de collections hétérogènes. Il se concentre sur la conception de hiérarchies de classes
+// pour une bibliothèque de médias comprenant des films et des livres, tout en garantissant une gestion
+// de la mémoire optimale via l'utilisation de pointeurs intelligents et l'implémentation d'une interface
+// pour l'affichage polymorphique des objets.
+// \file   td4.cpp
+// \author Alaa Edin Addas et Harry Heng
+// \date   17 mars 2024
+// Créé le 10 mars 2024
+//
 
 #pragma region "Includes"//{
 #define _CRT_SECURE_NO_WARNINGS // On permet d'utiliser les fonctions de copies de chaînes qui sont considérées non sécuritaires.
